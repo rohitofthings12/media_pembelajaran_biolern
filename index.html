@@ -177,14 +177,36 @@
         .section.active { display: block; }
         @keyframes slideIn { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
 
-        .slide-container { position: relative; overflow: hidden; }
-        .slides-wrapper { display: flex; transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+        /* ===== SLIDE CONTAINER - PERBAIKAN TOUCH ===== */
+        .slide-container { 
+            position: relative; 
+            overflow: hidden; 
+            touch-action: pan-y; /* Izinkan scroll vertikal, tangani horizontal sendiri */
+        }
+        .slides-wrapper { 
+            display: flex; 
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); 
+            will-change: transform;
+        }
         .slide { min-width: 100%; padding: 0 0.5rem; }
         .slide-nav { display: flex; justify-content: center; align-items: center; gap: 1rem; margin-top: 2rem; }
-        .slide-nav-btn { width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--primary); background: var(--white); color: var(--primary); font-size: 1.2rem; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; }
+        .slide-nav-btn { 
+            width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--primary); 
+            background: var(--white); color: var(--primary); font-size: 1.2rem; cursor: pointer; 
+            transition: all 0.3s ease; display: flex; align-items: center; justify-content: center;
+            /* FIX: Pastikan tombol bisa diklik di Android */
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+            min-width: 45px;
+        }
         .slide-nav-btn:hover { background: var(--primary); color: white; transform: scale(1.1); }
         .slide-dots { display: flex; gap: 0.5rem; }
-        .slide-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--light-gray); cursor: pointer; transition: all 0.3s ease; }
+        .slide-dot { 
+            width: 10px; height: 10px; border-radius: 50%; background: var(--light-gray); 
+            cursor: pointer; transition: all 0.3s ease;
+            touch-action: manipulation;
+            min-width: 10px;
+        }
         .slide-dot.active { background: var(--primary); width: 30px; border-radius: 5px; }
 
         .materi-list { display: grid; gap: 1rem; }
@@ -192,6 +214,7 @@
             background: var(--glass); backdrop-filter: blur(10px); border-radius: 18px; padding: 1.2rem;
             box-shadow: var(--shadow); cursor: pointer; transition: all 0.4s ease; display: flex;
             align-items: center; gap: 1rem; border: 1px solid rgba(255,255,255,0.5); position: relative; overflow: hidden;
+            touch-action: manipulation;
         }
         .materi-item::before { content: ''; position: absolute; left: 0; top: 0; width: 5px; height: 100%; background: linear-gradient(180deg, var(--primary), var(--secondary)); transform: scaleY(0); transition: transform 0.3s ease; }
         .materi-item:hover { transform: translateX(10px); box-shadow: var(--shadow-lg); }
@@ -224,51 +247,137 @@
         .quiz-option.wrong .quiz-option-letter { background: var(--danger); color: white; }
         .quiz-option.disabled { pointer-events: none; opacity: 0.8; }
         .quiz-nav { display: flex; justify-content: space-between; margin-top: 2rem; gap: 1rem; flex-wrap: wrap; }
-        .btn { padding: 0.85rem 2rem; border: none; border-radius: 14px; cursor: pointer; font-size: 0.95rem; font-weight: 600; transition: all 0.3s ease; font-family: 'Poppins', sans-serif; display: inline-flex; align-items: center; gap: 0.5rem; justify-content: center; flex: 1; min-width: 120px; touch-action: manipulation; }
+        .btn { 
+            padding: 0.85rem 2rem; border: none; border-radius: 14px; cursor: pointer; font-size: 0.95rem; 
+            font-weight: 600; transition: all 0.3s ease; font-family: 'Poppins', sans-serif; 
+            display: inline-flex; align-items: center; gap: 0.5rem; justify-content: center; 
+            flex: 1; min-width: 120px; 
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
         .btn-primary { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; box-shadow: 0 4px 14px rgba(13, 148, 136, 0.35); }
         .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(13, 148, 136, 0.45); }
         .btn-secondary { background: var(--light-gray); color: var(--dark); }
         .btn-secondary:hover { background: #e2e8f0; transform: translateY(-2px); }
         .timer { font-size: 1rem; font-weight: 600; color: var(--primary); background: var(--primary-light); padding: 0.5rem 1rem; border-radius: 12px; display: flex; align-items: center; gap: 0.5rem; }
 
-        /* ===== FLASHCARD PERBAIKAN ===== */
+        /* ===== FLASHCARD - PERBAIKAN TOTAL ===== */
+        .flashcard-section-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+
         .flashcard-container { 
             perspective: 1200px; 
             max-width: 500px; 
-            margin: 2rem auto; 
-            cursor: pointer;
-            -webkit-tap-highlight-color: transparent;
+            width: 100%;
+            margin: 2rem auto;
+            /* FIX: Hapus cursor dan onclick dari container, pindah ke card */
         }
+
         .flashcard { 
             width: 100%; 
             height: 300px; 
             position: relative; 
             transform-style: preserve-3d; 
-            transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1); 
+            transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            /* FIX: Pastikan touch berfungsi */
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+            border-radius: 24px;
         }
-        .flashcard.flipped { transform: rotateY(180deg); }
+
+        .flashcard.flipped { 
+            transform: rotateY(180deg); 
+        }
+
         .flashcard-face { 
             position: absolute; 
             width: 100%; 
             height: 100%; 
+            /* FIX: backface-visibility dengan prefix untuk semua browser */
+            -webkit-backface-visibility: hidden;
             backface-visibility: hidden; 
             border-radius: 24px; 
             display: flex; 
             flex-direction: column; 
             align-items: center; 
             justify-content: center; 
-            padding: 2rem; 
-            box-shadow: var(--shadow-xl); 
-            cursor: pointer;
-            pointer-events: auto;
+            padding: 2rem;
+            box-shadow: var(--shadow-xl);
+            /* FIX: Jangan blokir pointer events */
+            pointer-events: none;
         }
-        .flashcard-front { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; }
-        .flashcard-back { background: var(--white); color: var(--dark); transform: rotateY(180deg); border: 3px solid var(--primary); }
-        .flashcard-front h3 { font-size: 1.6rem; font-weight: 700; text-align: center; pointer-events: none; user-select: none; }
-        .flashcard-back h3 { font-size: 1.15rem; text-align: center; line-height: 1.7; color: var(--dark); pointer-events: none; user-select: none; }
-        .flashcard-hint { margin-top: 1.5rem; font-size: 0.85rem; opacity: 0.8; display: flex; align-items: center; gap: 0.5rem; pointer-events: none; user-select: none; }
-        .flashcard-controls { display: flex; justify-content: center; align-items: center; gap: 1rem; margin-top: 2rem; flex-wrap: wrap; }
-        .flashcard-counter { background: var(--glass); padding: 0.6rem 1.5rem; border-radius: 20px; font-weight: 600; color: var(--primary); box-shadow: var(--shadow); }
+
+        .flashcard-front { 
+            background: linear-gradient(135deg, var(--primary), var(--secondary)); 
+            color: white; 
+        }
+
+        .flashcard-back { 
+            background: var(--white); 
+            color: var(--dark); 
+            transform: rotateY(180deg); 
+            border: 3px solid var(--primary); 
+        }
+
+        .flashcard-front h3 { 
+            font-size: 1.6rem; 
+            font-weight: 700; 
+            text-align: center; 
+            user-select: none; 
+        }
+
+        .flashcard-back h3 { 
+            font-size: 1.15rem; 
+            text-align: center; 
+            line-height: 1.7; 
+            color: var(--dark); 
+            user-select: none; 
+        }
+
+        .flashcard-hint { 
+            margin-top: 1.5rem; 
+            font-size: 0.85rem; 
+            opacity: 0.8; 
+            display: flex; 
+            align-items: center; 
+            gap: 0.5rem; 
+            user-select: none; 
+        }
+
+        /* FIX: Indikator flip yang lebih jelas */
+        .flashcard-flip-indicator {
+            text-align: center;
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--gray);
+            font-weight: 500;
+            opacity: 0.8;
+        }
+
+        .flashcard-controls { 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            gap: 1rem; 
+            margin-top: 1.5rem; 
+            flex-wrap: wrap;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .flashcard-counter { 
+            background: var(--glass); 
+            padding: 0.6rem 1.5rem; 
+            border-radius: 20px; 
+            font-weight: 600; 
+            color: var(--primary); 
+            box-shadow: var(--shadow); 
+        }
 
         /* ===== THREE.JS FLOWER 3D ===== */
         .flower-3d-container { background: var(--glass); backdrop-filter: blur(10px); border-radius: 24px; padding: 2rem; box-shadow: var(--shadow-lg); border: 1px solid rgba(255,255,255,0.6); margin: 2rem 0; }
@@ -318,7 +427,7 @@
             animation: pulse-logo 2s infinite; padding: 1rem;
         }
 
-        /* ===== DRAG AND DROP MEKANISME BARU ===== */
+        /* ===== DRAG AND DROP ===== */
         .crossing-workspace {
             background: var(--white);
             border-radius: 24px;
@@ -363,6 +472,7 @@
             -webkit-user-drag: element;
             position: relative;
             border: 3px solid transparent;
+            touch-action: none; /* FIX: Izinkan touch drag */
         }
 
         .gene-tile:active {
@@ -386,6 +496,16 @@
             opacity: 0.5;
             transform: scale(1.1);
             z-index: 1000;
+        }
+
+        /* FIX: Touch drag clone */
+        .gene-tile-clone {
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.8;
+            transform: scale(1.15);
+            transition: none;
         }
 
         .gene-tile.placed {
@@ -479,6 +599,8 @@
             align-items: center;
             justify-content: center;
             box-shadow: var(--shadow-sm);
+            touch-action: manipulation;
+            z-index: 10;
         }
 
         .gene-slot.filled .remove-btn {
@@ -581,6 +703,7 @@
             box-shadow: var(--shadow-lg);
             transition: all 0.3s ease;
             font-family: 'Poppins', sans-serif;
+            touch-action: manipulation;
         }
 
         .cross-btn:hover {
@@ -613,6 +736,8 @@
             display: block;
             animation: fadeIn 0.5s ease;
         }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         .pollen-trail {
             width: 100%;
@@ -693,17 +818,17 @@
         .flower-stat-label { font-size: 0.8rem; color: var(--gray); margin-top: 0.3rem; }
 
         .simulasi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.2rem; }
-        .simulasi-card { background: var(--glass); backdrop-filter: blur(10px); border-radius: 20px; padding: 1.8rem; box-shadow: var(--shadow); cursor: pointer; transition: all 0.4s ease; border: 1px solid rgba(255,255,255,0.5); text-align: center; }
+        .simulasi-card { background: var(--glass); backdrop-filter: blur(10px); border-radius: 20px; padding: 1.8rem; box-shadow: var(--shadow); cursor: pointer; transition: all 0.4s ease; border: 1px solid rgba(255,255,255,0.5); text-align: center; touch-action: manipulation; }
         .simulasi-card:hover { transform: translateY(-8px) rotateX(5deg); box-shadow: var(--shadow-xl); }
         .simulasi-card .card-icon { font-size: 3rem; margin-bottom: 1rem; }
 
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(8px); z-index: 2000; justify-content: center; align-items: center; padding: 1rem; }
         .modal-overlay.active { display: flex; animation: fadeIn 0.3s ease; }
         .modal { background: var(--white); border-radius: 24px; padding: 2rem; max-width: 700px; width: 100%; max-height: 85vh; overflow-y: auto; animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: var(--shadow-xl); border: 1px solid rgba(255,255,255,0.5); }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(40px) scale(0.95); } to { opacity: 1; translateY(0) scale(1); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(40px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 2px solid var(--light-gray); }
         .modal-header h2 { font-size: 1.3rem; color: var(--dark); }
-        .modal-close { background: var(--light-gray); border: none; width: 40px; height: 40px; border-radius: 12px; font-size: 1.5rem; cursor: pointer; color: var(--gray); transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; }
+        .modal-close { background: var(--light-gray); border: none; width: 40px; height: 40px; border-radius: 12px; font-size: 1.5rem; cursor: pointer; color: var(--gray); transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; touch-action: manipulation; }
         .modal-close:hover { background: var(--danger); color: white; transform: rotate(90deg); }
         .modal-content h3 { color: var(--dark); margin: 1.5rem 0 0.8rem; font-size: 1.1rem; }
         .modal-content h3:first-child { margin-top: 0; }
@@ -790,7 +915,6 @@
             .info-table { font-size: 0.8rem; }
             .info-table th, .info-table td { padding: 0.5rem; }
             
-            /* Responsive drag and drop */
             .gene-tile { width: 55px; height: 55px; font-size: 1.2rem; }
             .gene-slot { width: 55px; height: 55px; font-size: 1rem; }
             .punnett-cell { width: 65px; height: 65px; font-size: 1.1rem; }
@@ -817,8 +941,6 @@
         ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: var(--primary-dark); }
     </style>
-<base target="_blank">
-<base target="_blank">
 </head>
 <body>
     <div class="bg-animation">
@@ -836,18 +958,18 @@
             <li><a href="#" class="nav-link" data-section="persilangan">Persilangan</a></li>
             <li><a href="#" class="nav-link" data-section="simulasi">Simulasi</a></li>
         </ul>
-        <div class="hamburger" id="hamburger" onclick="toggleMobileMenu()">
+        <div class="hamburger" id="hamburger">
             <span></span><span></span><span></span>
         </div>
     </nav>
 
     <div class="mobile-menu" id="mobileMenu">
-        <a href="#" class="nav-link active" data-section="dashboard" onclick="navigateTo('dashboard'); toggleMobileMenu();">🏠 Dashboard</a>
-        <a href="#" class="nav-link" data-section="materi" onclick="navigateTo('materi'); toggleMobileMenu();">📚 Materi</a>
-        <a href="#" class="nav-link" data-section="quiz" onclick="navigateTo('quiz'); toggleMobileMenu();">📝 Kuis</a>
-        <a href="#" class="nav-link" data-section="flashcard" onclick="navigateTo('flashcard'); toggleMobileMenu();">🎴 Flashcard</a>
-        <a href="#" class="nav-link" data-section="persilangan" onclick="navigateTo('persilangan'); toggleMobileMenu();">🌸 Persilangan</a>
-        <a href="#" class="nav-link" data-section="simulasi" onclick="navigateTo('simulasi'); toggleMobileMenu();">🔬 Simulasi</a>
+        <a href="#" class="nav-link" data-section="dashboard">🏠 Dashboard</a>
+        <a href="#" class="nav-link" data-section="materi">📚 Materi</a>
+        <a href="#" class="nav-link" data-section="quiz">📝 Kuis</a>
+        <a href="#" class="nav-link" data-section="flashcard">🎴 Flashcard</a>
+        <a href="#" class="nav-link" data-section="persilangan">🌸 Persilangan</a>
+        <a href="#" class="nav-link" data-section="simulasi">🔬 Simulasi</a>
     </div>
 
     <div class="container">
@@ -874,7 +996,8 @@
         <section id="materi" class="section">
             <div class="hero"><h1>📚 Materi Pembelajaran</h1><p>Pilih topik yang ingin kamu pelajari tentang Genetika & Hukum Mendel</p></div>
             <div class="search-box"><input type="text" id="searchMateri" placeholder="Cari materi biologi..." onkeyup="filterMateri()"></div>
-            <div class="slide-container">
+            <!-- FIX: Tambahkan id untuk touch swipe targeting -->
+            <div class="slide-container" id="materiSlideContainer">
                 <div class="slides-wrapper" id="materiSlides">
                     <div class="slide"><div class="materi-list" id="materiList1"></div></div>
                     <div class="slide"><div class="materi-list" id="materiList2"></div></div>
@@ -882,7 +1005,10 @@
             </div>
             <div class="slide-nav">
                 <button class="slide-nav-btn" onclick="prevMateriSlide()">←</button>
-                <div class="slide-dots" id="materiDots"><div class="slide-dot active" onclick="goToMateriSlide(0)"></div><div class="slide-dot" onclick="goToMateriSlide(1)"></div></div>
+                <div class="slide-dots" id="materiDots">
+                    <div class="slide-dot active" onclick="goToMateriSlide(0)"></div>
+                    <div class="slide-dot" onclick="goToMateriSlide(1)"></div>
+                </div>
                 <button class="slide-nav-btn" onclick="nextMateriSlide()">→</button>
             </div>
         </section>
@@ -913,63 +1039,63 @@
             </div>
         </section>
 
+        <!-- FIX: Flashcard section - onclick dipindah ke .flashcard, bukan .flashcard-container -->
         <section id="flashcard" class="section">
             <div class="hero"><h1>🎴 Flashcard Genetika</h1><p>Klik kartu untuk membalik, gunakan tombol panah untuk navigasi</p></div>
-            <!-- PERBAIKAN: Flashcard sekarang bisa diklik dengan event listener yang tepat -->
-            <div class="flashcard-container" id="flashcardContainer" onclick="flipCard()">
-                <div class="flashcard" id="flashcard">
-                    <div class="flashcard-face flashcard-front">
-                        <h3 id="cardFront">Istilah Genetika</h3>
-                        <div class="flashcard-hint">
-                            <span>👆</span> Klik untuk membalik
+            <div class="flashcard-section-wrapper">
+                <div class="flashcard-container" id="flashcardContainer">
+                    <!-- FIX: onclick dan cursor ada di .flashcard, bukan di container -->
+                    <div class="flashcard" id="flashcard" onclick="flipCard()">
+                        <div class="flashcard-face flashcard-front">
+                            <h3 id="cardFront">Istilah Genetika</h3>
+                            <div class="flashcard-hint">
+                                <span>👆</span> Klik untuk membalik
+                            </div>
+                        </div>
+                        <div class="flashcard-face flashcard-back">
+                            <h3 id="cardBack">Definisi</h3>
                         </div>
                     </div>
-                    <div class="flashcard-face flashcard-back">
-                        <h3 id="cardBack">Definisi</h3>
-                    </div>
                 </div>
-            </div>
-            <div class="flashcard-controls">
-                <button class="btn btn-secondary" onclick="prevCard()">← Sebelumnya</button>
-                <div class="flashcard-counter"><span id="cardIndex">1</span> / <span id="totalCards">10</span></div>
-                <button class="btn btn-primary" onclick="nextCard()">Selanjutnya →</button>
+                <div class="flashcard-flip-indicator" id="flipIndicator">Klik kartu atau tekan Spasi untuk membalik</div>
+                <div class="flashcard-controls">
+                    <button class="btn btn-secondary" id="btnPrevCard" onclick="prevCard()">← Sebelumnya</button>
+                    <div class="flashcard-counter"><span id="cardIndex">1</span> / <span id="totalCards">10</span></div>
+                    <button class="btn btn-primary" id="btnNextCard" onclick="nextCard()">Selanjutnya →</button>
+                </div>
             </div>
         </section>
 
         <section id="persilangan" class="section">
             <div class="hero"><h1>🌸 Persilangan Bunga 3D</h1><p>Simulasikan persilangan genetika bunga dengan mekanisme drag & drop interaktif</p></div>
             
-            <!-- MEKANISME BARU: Drag & Drop Persilangan -->
             <div class="crossing-workspace">
                 <div class="crossing-instruction">
                     <strong>🎯 Cara Bermain:</strong> Tarik (<em>drag</em>) gen <strong>R</strong> (Merah Dominan) atau <strong>r</strong> (Putih Resesif) ke kotak induk, lalu tekan tombol <strong>"Persilangkan!"</strong>
                 </div>
 
-                <!-- Gene Pool -->
                 <div style="text-align: center; margin-bottom: 0.5rem;">
                     <span style="font-size: 0.85rem; color: var(--gray); font-weight: 500;">🧬 Pilih Gen:</span>
                 </div>
                 <div class="gene-pool" id="genePool">
-                    <div class="gene-tile R" draggable="true" data-gene="R" ondragstart="dragStart(event)" ondragend="dragEnd(event)">R</div>
-                    <div class="gene-tile R" draggable="true" data-gene="R" ondragstart="dragStart(event)" ondragend="dragEnd(event)">R</div>
-                    <div class="gene-tile r" draggable="true" data-gene="r" ondragstart="dragStart(event)" ondragend="dragEnd(event)">r</div>
-                    <div class="gene-tile r" draggable="true" data-gene="r" ondragstart="dragStart(event)" ondragend="dragEnd(event)">r</div>
+                    <div class="gene-tile R" draggable="true" data-gene="R">R</div>
+                    <div class="gene-tile R" draggable="true" data-gene="R">R</div>
+                    <div class="gene-tile r" draggable="true" data-gene="r">r</div>
+                    <div class="gene-tile r" draggable="true" data-gene="r">r</div>
                 </div>
 
-                <!-- Parent Slots -->
                 <div class="punnett-square-container">
-                    <!-- Parent 1 -->
                     <div class="parent-slots">
                         <div class="parent-slot-label">👨 Induk 1 (Jantan)</div>
                         <div class="parent-slots-row">
                             <div class="slot-container">
-                                <div class="gene-slot" id="slot-p1-1" ondrop="drop(event, 'p1', 0)" ondragover="allowDrop(event)" ondragleave="dragLeave(event)">
+                                <div class="gene-slot" id="slot-p1-1" data-parent="p1" data-index="0">
                                     <span class="slot-placeholder">?</span>
                                     <button class="remove-btn" onclick="removeGene('p1', 0)">×</button>
                                 </div>
                             </div>
                             <div class="slot-container">
-                                <div class="gene-slot" id="slot-p1-2" ondrop="drop(event, 'p1', 1)" ondragover="allowDrop(event)" ondragleave="dragLeave(event)">
+                                <div class="gene-slot" id="slot-p1-2" data-parent="p1" data-index="1">
                                     <span class="slot-placeholder">?</span>
                                     <button class="remove-btn" onclick="removeGene('p1', 1)">×</button>
                                 </div>
@@ -980,23 +1106,21 @@
                         </div>
                     </div>
 
-                    <!-- Cross Button -->
                     <div style="display: flex; align-items: center;">
                         <button class="cross-btn pulse" id="crossBtn" onclick="performCrossing()" disabled>🌸 Persilangkan!</button>
                     </div>
 
-                    <!-- Parent 2 -->
                     <div class="parent-slots">
                         <div class="parent-slot-label">👩 Induk 2 (Betina)</div>
                         <div class="parent-slots-row">
                             <div class="slot-container">
-                                <div class="gene-slot" id="slot-p2-1" ondrop="drop(event, 'p2', 0)" ondragover="allowDrop(event)" ondragleave="dragLeave(event)">
+                                <div class="gene-slot" id="slot-p2-1" data-parent="p2" data-index="0">
                                     <span class="slot-placeholder">?</span>
                                     <button class="remove-btn" onclick="removeGene('p2', 0)">×</button>
                                 </div>
                             </div>
                             <div class="slot-container">
-                                <div class="gene-slot" id="slot-p2-2" ondrop="drop(event, 'p2', 1)" ondragover="allowDrop(event)" ondragleave="dragLeave(event)">
+                                <div class="gene-slot" id="slot-p2-2" data-parent="p2" data-index="1">
                                     <span class="slot-placeholder">?</span>
                                     <button class="remove-btn" onclick="removeGene('p2', 1)">×</button>
                                 </div>
@@ -1008,7 +1132,6 @@
                     </div>
                 </div>
 
-                <!-- Crossing Animation -->
                 <div class="crossing-animation" id="crossingAnimation">
                     <div style="font-size: 3rem; margin-bottom: 1rem;">🌺 💕 🌼</div>
                     <div class="pollen-trail">
@@ -1017,7 +1140,6 @@
                     <p style="color: var(--primary); font-weight: 600;">Sedang menyilangkan...</p>
                 </div>
 
-                <!-- Results -->
                 <div id="crossingResults" style="display: none;">
                     <div style="text-align: center; margin: 2rem 0;">
                         <h3 style="color: var(--dark); font-size: 1.2rem; margin-bottom: 1rem;">🌱 Hasil Persilangan</h3>
@@ -1068,7 +1190,6 @@
                 </div>
             </div>
 
-            <!-- 3D Flower Preview -->
             <div class="flower-3d-container" style="margin-top: 2rem;">
                 <div class="flower-3d-title">
                     <h2>🌺 Visualisasi Bunga 3D</h2>
@@ -1120,58 +1241,40 @@
     <footer><p>🧬 BioLearn Pro - Aplikasi Pembelajaran Biologi Interaktif © 2026</p><p style="margin-top:0.5rem;opacity:0.7;font-size:0.85rem;">Dibuat dengan ❤️ untuk pelajar Indonesia</p></footer>
 
     <script>
-
-        // ==================== DATA MATERI DARI FILE ====================
+        // ==================== DATA ====================
         const materiData = [
             {
                 id: 1, title: "Sejarah Hukum Mendel", desc: "Perjalanan Gregor Mendel dalam menemukan hukum pewarisan sifat", icon: "📜",
                 content: `<h3>Sejarah Hukum Mendel</h3>
                 <p>Sejarah hukum Mendel dimulai dari penelitian yang dilakukan oleh <strong>Gregor Johann Mendel</strong>, seorang biarawan asal Austria yang hidup pada abad ke-19. Sekitar tahun <strong>1856 hingga 1863</strong>, Mendel melakukan serangkaian eksperimen di kebun biara dengan tujuan memahami bagaimana sifat-sifat diturunkan dari induk ke keturunannya.</p>
-
                 <div class="highlight-box"><strong>Mengapa Kacang Polong (Pisum sativum)?</strong><br>
                 • Memiliki pasangan sifat yang <strong>kontras</strong> dan mudah diamati (ungu-putih, bulat-keriput, tinggi-pendek)<br>
                 • Bisa melakukan <strong>penyerbukan sendiri</strong> sehingga mudah mendapatkan galur murni<br>
                 • Bisa <strong>disilangkan manual</strong> untuk mengontrol proses perkawinan<br>
                 • Siklus hidup <strong>relatif singkat</strong> - bisa mengamati beberapa generasi<br>
-                • Menghasilkan <strong>banyak keturunan</strong> sehingga data lebih akurat secara statistik<br>
-                • Mudah ditanam dan dirawat di lingkungan kebun biara</div>
-
+                • Menghasilkan <strong>banyak keturunan</strong> sehingga data lebih akurat secara statistik</div>
                 <h3>Publikasi dan Pengakuan</h3>
-                <p>Hasil penelitiannya dipublikasikan tahun <strong>1866</strong> dalam karya ilmiah berjudul <em>Versuche über Pflanzen-Hybriden</em> (Percobaan tentang Persilangan Tanaman). Mendel menjelaskan konsep "faktor pembawa sifat" (yang sekarang dikenal sebagai <strong>gen</strong>).</p>
-
-                <p>Sayangnya, pada saat itu penelitiannya <strong>tidak mendapat perhatian luas</strong> karena pendekatan matematika dianggap tidak umum dalam biologi. Baru sekitar tahun <strong>1900</strong>, hasilnya ditemukan kembali secara terpisah oleh <strong>Hugo de Vries, Carl Correns, dan Erich von Tschermak</strong>. Sejak itu, Mendel dikenal sebagai <strong>Bapak Genetika</strong>.</p>`
+                <p>Hasil penelitiannya dipublikasikan tahun <strong>1866</strong> dalam karya ilmiah berjudul <em>Versuche über Pflanzen-Hybriden</em>. Baru sekitar tahun <strong>1900</strong>, hasilnya ditemukan kembali secara terpisah oleh <strong>Hugo de Vries, Carl Correns, dan Erich von Tschermak</strong>. Sejak itu, Mendel dikenal sebagai <strong>Bapak Genetika</strong>.</p>`
             },
             {
                 id: 2, title: "Konsep Dasar Genetika", desc: "Memahami gen, alel, genotipe, fenotipe, dan dominansi", icon: "🧬",
                 content: `<h3>Apa itu Genetika?</h3>
-                <p>Genetika adalah ilmu yang mempelajari bagaimana sifat makhluk hidup <strong>diwariskan dari induk ke keturunannya</strong>. Pewarisan ini terjadi melalui unit kecil yang disebut <strong>gen</strong>, yang terdapat pada kromosom di dalam inti sel.</p>
-
+                <p>Genetika adalah ilmu yang mempelajari bagaimana sifat makhluk hidup <strong>diwariskan dari induk ke keturunannya</strong>.</p>
                 <div class="highlight-box"><strong>Istilah Penting:</strong><br>
                 • <strong>Gen</strong> - Unit pembawa informasi yang menentukan sifat<br>
-                • <strong>Alel</strong> - Pasangan/variasi dari gen yang sama (misal: T untuk tinggi, t untuk pendek)<br>
+                • <strong>Alel</strong> - Pasangan/variasi dari gen yang sama<br>
                 • <strong>Genotipe</strong> - Susunan alel dalam individu (TT, Tt, atau tt)<br>
-                • <strong>Fenotipe</strong> - Sifat yang tampak secara fisik (tinggi atau pendek)<br>
-                • <strong>Alel Dominan</strong> - Alel yang sifatnya lebih kuat, menutupi alel lain (T)<br>
-                • <strong>Alel Resesif</strong> - Alel yang tertutupi, hanya muncul jika homozigot (tt)<br>
+                • <strong>Fenotipe</strong> - Sifat yang tampak secara fisik<br>
+                • <strong>Alel Dominan</strong> - Alel yang sifatnya lebih kuat (T)<br>
+                • <strong>Alel Resesif</strong> - Alel yang tertutupi (t)<br>
                 • <strong>Homozigot</strong> - Alel yang sama (TT atau tt)<br>
-                • <strong>Heterozigot</strong> - Alel yang berbeda (Tt)</div>
-
-                <h3>Proses Pewarisan</h3>
-                <p>Dalam proses reproduksi, alel akan <strong>dipisahkan saat pembentukan gamet</strong> (sel kelamin), sehingga setiap gamet hanya membawa satu alel. Ketika terjadi pembuahan, alel dari kedua induk akan <strong>bergabung kembali</strong> membentuk individu baru.</p>`
+                • <strong>Heterozigot</strong> - Alel yang berbeda (Tt)</div>`
             },
             {
                 id: 3, title: "Hukum Mendel I (Segregasi)", desc: "Hukum pemisahan alel saat pembentukan gamet", icon: "⚖️",
                 content: `<h3>Hukum Mendel I - Hukum Segregasi</h3>
-                <p>Hukum ini menjelaskan bahwa setiap makhluk hidup memiliki <strong>sepasang alel</strong> untuk satu sifat, dan pasangan alel tersebut akan <strong>berpisah saat pembentukan gamet</strong>. Setiap gamet hanya membawa satu alel, bukan sepasang.</p>
-
-                <div class="highlight-box"><strong>Contoh: Tinggi Tanaman Kacang Polong</strong><br>
-                • <strong>T</strong> = tinggi (dominan)<br>
-                • <strong>t</strong> = pendek (resesif)<br><br>
-                Tanaman dengan genotipe <strong>Tt</strong> (heterozigot) punya dua alel: T dan t.<br>
-                Saat membentuk gamet, alel berpisah menjadi:<br>
-                • Gamet 1 membawa <strong>T</strong><br>
-                • Gamet 2 membawa <strong>t</strong></div>
-
+                <p>Setiap makhluk hidup memiliki <strong>sepasang alel</strong> untuk satu sifat, dan pasangan alel tersebut akan <strong>berpisah saat pembentukan gamet</strong>.</p>
+                <div class="highlight-box"><strong>Contoh: Tinggi Tanaman</strong><br>T = tinggi (dominan), t = pendek (resesif)<br>Tanaman Tt saat berbunga menghasilkan gamet T dan t secara terpisah.</div>
                 <h3>Persilangan Tt × Tt</h3>
                 <table class="info-table">
                     <tr><th>Kombinasi</th><th>Genotipe</th><th>Fenotipe</th></tr>
@@ -1180,111 +1283,45 @@
                     <tr><td>t × T</td><td>Tt</td><td>Tinggi</td></tr>
                     <tr><td>t × t</td><td>tt</td><td>Pendek</td></tr>
                 </table>
-
-                <div class="highlight-box"><strong>Hasil:</strong><br>
-                • Rasio Genotipe = <strong>1 TT : 2 Tt : 1 tt</strong><br>
-                • Rasio Fenotipe = <strong>3 tinggi : 1 pendek</strong><br><br>
-                Kenapa lebih banyak yang tinggi? Karena alel T (dominan) menutupi alel t (resesif).</div>
-
-                <p><strong>Intinya:</strong> Alel tidak bercampur, tetap terpisah saat pembentukan gamet, dan bergabung kembali saat pembuahan dengan pola yang teratur.</p>`
+                <div class="highlight-box"><strong>Hasil:</strong> Rasio Fenotipe = <strong>3 tinggi : 1 pendek</strong></div>`
             },
             {
                 id: 4, title: "Hukum Mendel II (Asortasi Bebas)", desc: "Gen untuk sifat berbeda diwariskan secara bebas", icon: "🔄",
                 content: `<h3>Hukum Mendel II - Hukum Asortasi Bebas</h3>
-                <p>Hukum ini menjelaskan bahwa <strong>gen untuk sifat yang berbeda akan diwariskan secara bebas</strong> (tidak saling mempengaruhi) saat pembentukan gamet. Kombinasi alel bisa terjadi secara acak selama gen tidak saling terkait.</p>
-
-                <div class="highlight-box"><strong>Contoh: Dua Sifat pada Kacang Polong</strong><br>
-                • Bentuk biji: <strong>R</strong> = bulat (dominan), <strong>r</strong> = keriput (resesif)<br>
-                • Warna biji: <strong>Y</strong> = kuning (dominan), <strong>y</strong> = hijau (resesif)</div>
-
-                <h3>Persilangan Dihibrid: RrYy × RrYy</h3>
-                <p>Setiap induk bisa menghasilkan <strong>4 macam gamet</strong> karena alelnya bebas berpasangan:</p>
-                <ul style="margin-left:1.5rem; line-height:1.8;">
-                    <li>RY</li>
-                    <li>Ry</li>
-                    <li>rY</li>
-                    <li>ry</li>
-                </ul>
-
-                <div class="highlight-box"><strong>Hasil Persilangan:</strong><br>
-                • 9 bulat kuning<br>
-                • 3 bulat hijau<br>
-                • 3 keriput kuning<br>
-                • 1 keriput hijau<br><br>
-                <strong>Rasio = 9 : 3 : 3 : 1</strong><br><br>
-                Ini karena alel untuk bentuk biji (R/r) tidak mempengaruhi alel warna biji (Y/y).</div>
-
-                <p><strong>Catatan penting:</strong> Hukum ini berlaku jika gen tidak berada pada kromosom yang sama (tidak tertaut). Kalau gen saling terkait, hasilnya bisa berbeda.</p>`
+                <p><strong>Gen untuk sifat yang berbeda akan diwariskan secara bebas</strong> saat pembentukan gamet.</p>
+                <div class="highlight-box"><strong>Contoh Dihibrid RrYy × RrYy:</strong><br>Hasil: 9 bulat kuning : 3 bulat hijau : 3 keriput kuning : 1 keriput hijau<br><strong>Rasio = 9 : 3 : 3 : 1</strong></div>`
             },
             {
                 id: 5, title: "Jenis-Jenis Persilangan", desc: "Monohibrid, Dihibrid, Test Cross, dan Back Cross", icon: "🔀",
                 content: `<h3>Jenis-Jenis Persilangan</h3>
                 <table class="info-table">
-                    <tr><th>Jenis Persilangan</th><th>Jumlah Sifat</th><th>Tujuan</th><th>Contoh</th><th>Rasio Hasil</th></tr>
-                    <tr><td><strong>Monohibrid</strong></td><td>1 sifat</td><td>Melihat pewarisan 1 sifat</td><td>Tt × Tt</td><td>3:1</td></tr>
-                    <tr><td><strong>Dihibrid</strong></td><td>2 sifat</td><td>Melihat pewarisan 2 sifat</td><td>RrYy × RrYy</td><td>9:3:3:1</td></tr>
-                    <tr><td><strong>Test Cross</strong></td><td>1 sifat</td><td>Mengetahui genotip</td><td>TT × tt</td><td>1:1 atau 100%</td></tr>
-                    <tr><td><strong>Back Cross</strong></td><td>1 sifat</td><td>Menyilangkan dengan induk</td><td>F₁ × induk</td><td>Tergantung induk</td></tr>
-                </table>
-
-                <div class="highlight-box"><strong>Cara Cepat Hafal:</strong><br>
-                • <strong>Mono</strong> = 1 → 3:1<br>
-                • <strong>Di</strong> = 2 → 9:3:3:1<br>
-                • <strong>Test</strong> = cek gen<br>
-                • <strong>Back</strong> = balik ke induk</div>`
+                    <tr><th>Jenis</th><th>Jumlah Sifat</th><th>Contoh</th><th>Rasio</th></tr>
+                    <tr><td><strong>Monohibrid</strong></td><td>1 sifat</td><td>Tt × Tt</td><td>3:1</td></tr>
+                    <tr><td><strong>Dihibrid</strong></td><td>2 sifat</td><td>RrYy × RrYy</td><td>9:3:3:1</td></tr>
+                    <tr><td><strong>Test Cross</strong></td><td>1 sifat</td><td>TT × tt</td><td>1:1 / 100%</td></tr>
+                    <tr><td><strong>Back Cross</strong></td><td>1 sifat</td><td>F₁ × induk</td><td>Bervariasi</td></tr>
+                </table>`
             },
             {
                 id: 6, title: "Penyimpangan Hukum Mendel", desc: "Incomplete dominance, codominance, linkage, crossing over, epistasis", icon: "⚠️",
-                content: `<h3>1. Dominansi Tidak Sempurna (Incomplete Dominance)</h3>
-                <p>Tidak ada alel yang benar-benar dominan, sehingga sifat keturunannya menjadi <strong>campuran</strong>.</p>
-                <div class="highlight-box"><strong>Contoh:</strong> Bunga merah × bunga putih → bunga <strong>pink</strong> (merah muda)<br>
-                Rasio: <strong>1 merah : 2 pink : 1 putih</strong></div>
-
-                <h3>2. Kodominansi (Codominance)</h3>
-                <p>Kedua alel <strong>sama-sama kuat</strong>, sehingga keduanya muncul bersamaan.</p>
-                <div class="highlight-box"><strong>Contoh:</strong> Golongan darah <strong>AB</strong> (A dan B muncul bersama)</div>
-
+                content: `<h3>1. Dominansi Tidak Sempurna</h3>
+                <div class="highlight-box"><strong>Contoh:</strong> Bunga merah × bunga putih → bunga <strong>pink</strong><br>Rasio: <strong>1 merah : 2 pink : 1 putih</strong></div>
+                <h3>2. Kodominansi</h3>
+                <div class="highlight-box"><strong>Contoh:</strong> Golongan darah <strong>AB</strong></div>
                 <h3>3. Gen Tertaut (Linkage)</h3>
-                <p>Gen-gen yang berada pada <strong>kromosom yang sama</strong>, sehingga tidak diwariskan secara bebas. Hasil persilangan tidak mengikuti rasio Mendel karena gen cenderung diwariskan bersama.</p>
-
+                <p>Gen-gen pada kromosom yang sama cenderung diwariskan bersama.</p>
                 <h3>4. Pindah Silang (Crossing Over)</h3>
-                <p>Terjadi saat kromosom <strong>bertukar bagian</strong> saat pembentukan gamet. Akibatnya muncul kombinasi sifat baru yang tidak sama dengan induknya.</p>
-
-                <h3>5. Epistasis (Interaksi Gen)</h3>
-                <p>Terjadi ketika <strong>satu gen mempengaruhi atau menutupi gen lain</strong>.</p>
-                <div class="highlight-box"><strong>Contoh:</strong> Warna bulu hewan bisa dipengaruhi oleh lebih dari satu gen.</div>`
+                <p>Kromosom bertukar bagian saat pembentukan gamet, memunculkan kombinasi baru.</p>
+                <h3>5. Epistasis</h3>
+                <p>Satu gen mempengaruhi atau menutupi gen lain.</p>`
             },
             {
                 id: 7, title: "Manfaat Hukum Mendel", desc: "Aplikasi hukum Mendel dalam pertanian, kedokteran, dan bioteknologi", icon: "🌾",
                 content: `<h3>Manfaat Hukum Mendel dalam Kehidupan</h3>
-
-                <div class="highlight-box"><strong>1. Pertanian 🌾</strong><br>
-                Menghasilkan tanaman unggul dengan sifat:<br>
-                • Tahan hama dan penyakit<br>
-                • Hasil panen banyak<br>
-                • Cepat panen<br>
-                • Tahan kekeringan</div>
-
-                <div class="highlight-box"><strong>2. Peternakan 🐄</strong><br>
-                Mendapatkan hewan berkualitas dengan sifat:<br>
-                • Daging berkualitas tinggi<br>
-                • Produksi susu melimpah<br>
-                • Pertumbuhan cepat dan sehat</div>
-
-                <div class="highlight-box"><strong>3. Kedokteran 🏥</strong><br>
-                • Memahami penyakit genetik<br>
-                • Memprediksi risiko penyakit turunan<br>
-                • Konseling genetik untuk calon orang tua</div>
-
-                <div class="highlight-box"><strong>4. Bioteknologi 🔬</strong><br>
-                • Dasar rekayasa genetika<br>
-                • Penelitian DNA dan genom<br>
-                • Pengembangan terapi gen</div>
-
-                <div class="highlight-box"><strong>5. Ilmu Pengetahuan 📚</strong><br>
-                • Memahami cara pewarisan sifat<br>
-                • Prediksi sifat keturunan dari induknya<br>
-                • Dasar perkembangan ilmu genetika modern</div>`
+                <div class="highlight-box"><strong>1. Pertanian 🌾</strong><br>Menghasilkan tanaman unggul: tahan hama, panen banyak, cepat panen.</div>
+                <div class="highlight-box"><strong>2. Peternakan 🐄</strong><br>Mendapatkan hewan berkualitas: daging baik, produksi susu melimpah.</div>
+                <div class="highlight-box"><strong>3. Kedokteran 🏥</strong><br>Memahami penyakit genetik, konseling genetik untuk calon orang tua.</div>
+                <div class="highlight-box"><strong>4. Bioteknologi 🔬</strong><br>Dasar rekayasa genetika, penelitian DNA, pengembangan terapi gen.</div>`
             }
         ];
 
@@ -1328,13 +1365,10 @@
         let threeRenderers = {};
         let threeAnimFrames = {};
         
-        // State untuk drag and drop
-        let parentGenes = {
-            p1: [null, null],
-            p2: [null, null]
-        };
+        let parentGenes = { p1: [null, null], p2: [null, null] };
 
         // ==================== MOBILE MENU ====================
+        document.getElementById('hamburger').addEventListener('click', toggleMobileMenu);
         function toggleMobileMenu() {
             document.getElementById('hamburger').classList.toggle('active');
             document.getElementById('mobileMenu').classList.toggle('active');
@@ -1345,13 +1379,11 @@
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
             document.getElementById(sectionId).classList.add('active');
-            const navLinks = document.querySelectorAll('[data-section="' + sectionId + '"]');
-            navLinks.forEach(l => l.classList.add('active'));
+            document.querySelectorAll('[data-section="' + sectionId + '"]').forEach(l => l.classList.add('active'));
             window.scrollTo(0, 0);
             document.getElementById('hamburger').classList.remove('active');
             document.getElementById('mobileMenu').classList.remove('active');
 
-            // Init Three.js scenes when persilangan section is active
             if (sectionId === 'persilangan') {
                 setTimeout(() => {
                     initThreeJS('canvasParent1', 'red');
@@ -1360,7 +1392,8 @@
             }
         }
 
-        document.querySelectorAll('.nav-links a').forEach(link => {
+        // Attach nav link events
+        document.querySelectorAll('.nav-link').forEach(link => {
             link.addEventListener('click', (e) => {
                 e.preventDefault();
                 navigateTo(link.dataset.section);
@@ -1372,12 +1405,16 @@
             const container = document.getElementById(containerId);
             if (!container) return;
 
-            // Clear previous canvas
             const existingCanvas = container.querySelector('canvas');
             if (existingCanvas) existingCanvas.remove();
 
-            const width = container.clientWidth;
-            const height = container.clientHeight;
+            if (threeAnimFrames[containerId]) {
+                cancelAnimationFrame(threeAnimFrames[containerId]);
+                delete threeAnimFrames[containerId];
+            }
+
+            const width = container.clientWidth || 300;
+            const height = container.clientHeight || 250;
 
             const scene = new THREE.Scene();
             scene.background = new THREE.Color(0xe0f7fa);
@@ -1389,121 +1426,58 @@
             const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             renderer.setSize(width, height);
             renderer.shadowMap.enabled = true;
-            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
             container.insertBefore(renderer.domElement, container.firstChild);
 
-            // Lighting
             const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
             scene.add(ambientLight);
-
             const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
             dirLight.position.set(5, 10, 7);
             dirLight.castShadow = true;
             scene.add(dirLight);
 
-            const pointLight = new THREE.PointLight(0xffd700, 0.5);
-            pointLight.position.set(0, 3, 2);
-            scene.add(pointLight);
-
-            // Flower Group
             const flowerGroup = new THREE.Group();
-
-            // Colors
             const petalColor = colorType === 'red' ? 0xe11d48 : 0xfef2f2;
-            const centerColor = 0xf59e0b;
             const stemColor = 0x22c55e;
 
-            // Stem
             const stemGeometry = new THREE.CylinderGeometry(0.08, 0.1, 2.5, 8);
-            const stemMaterial = new THREE.MeshLambertMaterial({ color: stemColor });
-            const stem = new THREE.Mesh(stemGeometry, stemMaterial);
+            const stem = new THREE.Mesh(stemGeometry, new THREE.MeshLambertMaterial({ color: stemColor }));
             stem.position.y = -0.5;
-            stem.castShadow = true;
             flowerGroup.add(stem);
 
-            // Leaves
             const leafGeometry = new THREE.SphereGeometry(0.3, 8, 8);
             leafGeometry.scale(1, 0.3, 0.5);
-            const leafMaterial = new THREE.MeshLambertMaterial({ color: stemColor });
-
-            const leaf1 = new THREE.Mesh(leafGeometry, leafMaterial);
-            leaf1.position.set(0.3, -0.8, 0);
-            leaf1.rotation.z = -0.5;
+            const leafMat = new THREE.MeshLambertMaterial({ color: stemColor });
+            const leaf1 = new THREE.Mesh(leafGeometry, leafMat);
+            leaf1.position.set(0.3, -0.8, 0); leaf1.rotation.z = -0.5;
             flowerGroup.add(leaf1);
-
-            const leaf2 = new THREE.Mesh(leafGeometry, leafMaterial);
-            leaf2.position.set(-0.3, -1.0, 0);
-            leaf2.rotation.z = 0.5;
+            const leaf2 = new THREE.Mesh(leafGeometry, leafMat);
+            leaf2.position.set(-0.3, -1.0, 0); leaf2.rotation.z = 0.5;
             flowerGroup.add(leaf2);
 
-            // Flower Center
-            const centerGeometry = new THREE.SphereGeometry(0.35, 16, 16);
-            const centerMaterial = new THREE.MeshLambertMaterial({ color: centerColor });
-            const center = new THREE.Mesh(centerGeometry, centerMaterial);
+            const center = new THREE.Mesh(new THREE.SphereGeometry(0.35, 16, 16), new THREE.MeshLambertMaterial({ color: 0xf59e0b }));
             center.position.y = 1.0;
-            center.castShadow = true;
             flowerGroup.add(center);
 
-            // Petals
             const petalGeometry = new THREE.SphereGeometry(0.4, 12, 12);
             petalGeometry.scale(0.8, 1.5, 0.3);
-            const petalMaterial = new THREE.MeshLambertMaterial({ 
-                color: petalColor,
-                transparent: true,
-                opacity: 0.9
-            });
+            const petalMat = new THREE.MeshLambertMaterial({ color: petalColor, transparent: true, opacity: 0.9 });
 
             for (let i = 0; i < 6; i++) {
                 const angle = (i / 6) * Math.PI * 2;
-                const petal = new THREE.Mesh(petalGeometry, petalMaterial);
-                petal.position.set(
-                    Math.cos(angle) * 0.5,
-                    1.0 + Math.sin(angle) * 0.1,
-                    Math.sin(angle) * 0.5
-                );
-                petal.rotation.z = angle;
-                petal.rotation.x = 0.3;
-                petal.castShadow = true;
+                const petal = new THREE.Mesh(petalGeometry, petalMat);
+                petal.position.set(Math.cos(angle) * 0.5, 1.0 + Math.sin(angle) * 0.1, Math.sin(angle) * 0.5);
+                petal.rotation.z = angle; petal.rotation.x = 0.3;
                 flowerGroup.add(petal);
             }
 
-            // Inner petals (smaller)
-            const innerPetalGeometry = new THREE.SphereGeometry(0.25, 10, 10);
-            innerPetalGeometry.scale(0.7, 1.2, 0.25);
-            const innerPetalMaterial = new THREE.MeshLambertMaterial({ 
-                color: colorType === 'red' ? 0xbe123c : 0xfecaca,
-                transparent: true,
-                opacity: 0.85
-            });
-
-            for (let i = 0; i < 6; i++) {
-                const angle = (i / 6) * Math.PI * 2 + Math.PI / 6;
-                const petal = new THREE.Mesh(innerPetalGeometry, innerPetalMaterial);
-                petal.position.set(
-                    Math.cos(angle) * 0.3,
-                    1.0 + Math.sin(angle) * 0.05,
-                    Math.sin(angle) * 0.3
-                );
-                petal.rotation.z = angle;
-                petal.rotation.x = 0.2;
-                flowerGroup.add(petal);
-            }
-
-            // Ground
             const groundGeometry = new THREE.CircleGeometry(3, 32);
-            const groundMaterial = new THREE.MeshLambertMaterial({ color: 0x86efac });
-            const ground = new THREE.Mesh(groundGeometry, groundMaterial);
-            ground.rotation.x = -Math.PI / 2;
-            ground.position.y = -1.8;
-            ground.receiveShadow = true;
+            const ground = new THREE.Mesh(groundGeometry, new THREE.MeshLambertMaterial({ color: 0x86efac }));
+            ground.rotation.x = -Math.PI / 2; ground.position.y = -1.8;
             scene.add(ground);
-
             scene.add(flowerGroup);
 
-            // Store references
             threeScenes[containerId] = { scene, camera, renderer, flowerGroup };
 
-            // Animation
             function animate() {
                 if (!threeScenes[containerId]) return;
                 threeAnimFrames[containerId] = requestAnimationFrame(animate);
@@ -1512,36 +1486,17 @@
                 renderer.render(scene, camera);
             }
             animate();
-
-            // Handle resize
-            window.addEventListener('resize', () => {
-                const newWidth = container.clientWidth;
-                const newHeight = container.clientHeight;
-                camera.aspect = newWidth / newHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(newWidth, newHeight);
-            });
         }
 
         function initThreeJS(containerId, colorType) {
-            if (threeScenes[containerId]) {
-                // Update existing scene
-                const scene = threeScenes[containerId];
-                // We need to recreate the flower with new color
-                createFlower3D(containerId, colorType);
-            } else {
-                createFlower3D(containerId, colorType);
-            }
+            createFlower3D(containerId, colorType);
         }
 
         // ==================== MATERI SLIDES ====================
         function renderMateri() {
             const half = Math.ceil(materiData.length / 2);
-            const list1 = document.getElementById('materiList1');
-            const list2 = document.getElementById('materiList2');
-
-            list1.innerHTML = materiData.slice(0, half).map(m => createMateriItem(m)).join('');
-            list2.innerHTML = materiData.slice(half).map(m => createMateriItem(m)).join('');
+            document.getElementById('materiList1').innerHTML = materiData.slice(0, half).map(createMateriItem).join('');
+            document.getElementById('materiList2').innerHTML = materiData.slice(half).map(createMateriItem).join('');
         }
 
         function createMateriItem(m) {
@@ -1553,17 +1508,14 @@
 
         function filterMateri() {
             const search = document.getElementById('searchMateri').value.toLowerCase();
-            const items = document.querySelectorAll('.materi-item');
-            items.forEach(item => {
-                const text = item.textContent.toLowerCase();
-                item.style.display = text.includes(search) ? 'flex' : 'none';
+            document.querySelectorAll('.materi-item').forEach(item => {
+                item.style.display = item.textContent.toLowerCase().includes(search) ? 'flex' : 'none';
             });
         }
 
         function goToMateriSlide(index) {
             currentMateriSlide = index;
-            const wrapper = document.getElementById('materiSlides');
-            wrapper.style.transform = 'translateX(-' + (index * 100) + '%)';
+            document.getElementById('materiSlides').style.transform = `translateX(-${index * 100}%)`;
             document.querySelectorAll('#materiDots .slide-dot').forEach((dot, i) => {
                 dot.classList.toggle('active', i === index);
             });
@@ -1576,6 +1528,45 @@
         function prevMateriSlide() {
             if (currentMateriSlide > 0) goToMateriSlide(currentMateriSlide - 1);
         }
+
+        // ===== FIX: TOUCH SWIPE KHUSUS UNTUK SLIDE MATERI SAJA =====
+        (function setupSlideTouch() {
+            let slideStartX = 0;
+            let slideStartY = 0;
+            let isSlideSwiping = false;
+            const slideContainer = document.getElementById('materiSlideContainer');
+
+            slideContainer.addEventListener('touchstart', (e) => {
+                slideStartX = e.touches[0].clientX;
+                slideStartY = e.touches[0].clientY;
+                isSlideSwiping = false;
+            }, { passive: true });
+
+            slideContainer.addEventListener('touchmove', (e) => {
+                if (!slideStartX) return;
+                const dx = e.touches[0].clientX - slideStartX;
+                const dy = e.touches[0].clientY - slideStartY;
+
+                // Tentukan arah dominan gerakan
+                if (!isSlideSwiping) {
+                    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 10) {
+                        isSlideSwiping = true;
+                        e.preventDefault(); // Cegah scroll vertikal saat swipe horizontal
+                    }
+                } else {
+                    e.preventDefault();
+                }
+            }, { passive: false });
+
+            slideContainer.addEventListener('touchend', (e) => {
+                if (!isSlideSwiping) return;
+                const dx = e.changedTouches[0].clientX - slideStartX;
+                if (dx < -50) nextMateriSlide();
+                else if (dx > 50) prevMateriSlide();
+                isSlideSwiping = false;
+                slideStartX = 0;
+            }, { passive: true });
+        })();
 
         function openMateri(id) {
             const materi = materiData.find(m => m.id === id);
@@ -1600,7 +1591,7 @@
                 seconds++;
                 const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
                 const secs = (seconds % 60).toString().padStart(2, '0');
-                document.getElementById('timer').textContent = '⏱️ ' + mins + ':' + secs;
+                document.getElementById('timer').textContent = `⏱️ ${mins}:${secs}`;
             }, 1000);
         }
 
@@ -1632,7 +1623,7 @@
                     if (idx === q.correct) classes += ' correct';
                     else if (idx === quizAnswers[currentQuizIndex]) classes += ' wrong';
                 }
-                return `<button class="${classes}" onclick="selectAnswer(${idx})" ${quizAnswers[currentQuizIndex] !== undefined ? 'disabled' : ''}>
+                return `<button class="${classes}" onclick="selectAnswer(${idx})">
                     <div class="quiz-option-letter">${String.fromCharCode(65 + idx)}</div>
                     <span>${opt}</span>
                 </button>`;
@@ -1659,19 +1650,12 @@
         }
 
         function nextQuestion() {
-            if (currentQuizIndex < quizData.length - 1) {
-                currentQuizIndex++;
-                renderQuestion();
-            } else {
-                finishQuiz();
-            }
+            if (currentQuizIndex < quizData.length - 1) { currentQuizIndex++; renderQuestion(); }
+            else finishQuiz();
         }
 
         function prevQuestion() {
-            if (currentQuizIndex > 0) {
-                currentQuizIndex--;
-                renderQuestion();
-            }
+            if (currentQuizIndex > 0) { currentQuizIndex--; renderQuestion(); }
         }
 
         function finishQuiz() {
@@ -1679,16 +1663,13 @@
             const percentage = Math.round((quizScore / quizData.length) * 100);
             quizTaken++;
             totalScore += percentage;
-
             document.getElementById('quizContainer').style.display = 'none';
             document.getElementById('quizResult').style.display = 'block';
-            document.getElementById('finalScore').textContent = quizScore + '/' + quizData.length;
-
+            document.getElementById('finalScore').textContent = `${quizScore}/${quizData.length}`;
             let message, emoji;
             if (percentage >= 80) { message = "Luar biasa! Kamu sangat menguasai materi genetika!"; emoji = "🏆"; }
             else if (percentage >= 60) { message = "Bagus! Tingkatkan terus pemahamanmu!"; emoji = "😊"; }
             else { message = "Jangan menyerah! Pelajari lagi materinya dan coba lagi!"; emoji = "📚"; }
-
             document.getElementById('resultMessage').textContent = message;
             document.getElementById('resultEmoji').textContent = emoji;
             document.getElementById('quizTaken').textContent = quizTaken;
@@ -1696,28 +1677,29 @@
         }
 
         function restartQuiz() {
-            currentQuizIndex = 0;
-            quizScore = 0;
-            quizAnswers = [];
+            currentQuizIndex = 0; quizScore = 0; quizAnswers = [];
             document.getElementById('quizContainer').style.display = 'block';
             document.getElementById('quizResult').style.display = 'none';
-            renderQuestion();
-            startTimer();
+            renderQuestion(); startTimer();
         }
 
-        // ==================== FLASHCARD PERBAIKAN ====================
+        // ==================== FLASHCARD - PERBAIKAN TOTAL ====================
         function renderCard() {
             const card = flashcards[currentCardIndex];
             document.getElementById('cardFront').textContent = card.front;
             document.getElementById('cardBack').textContent = card.back;
             document.getElementById('cardIndex').textContent = currentCardIndex + 1;
             document.getElementById('totalCards').textContent = flashcards.length;
+            // Reset flip state setiap ganti kartu
             document.getElementById('flashcard').classList.remove('flipped');
+            document.getElementById('flipIndicator').textContent = 'Klik kartu atau tekan Spasi untuk membalik';
         }
 
         function flipCard() {
-            const flashcard = document.getElementById('flashcard');
-            flashcard.classList.toggle('flipped');
+            const fc = document.getElementById('flashcard');
+            fc.classList.toggle('flipped');
+            const isFlipped = fc.classList.contains('flipped');
+            document.getElementById('flipIndicator').textContent = isFlipped ? '✅ Menampilkan definisi - Klik lagi untuk kembali' : 'Klik kartu atau tekan Spasi untuk membalik';
         }
 
         function nextCard() {
@@ -1730,7 +1712,53 @@
             renderCard();
         }
 
-        // ==================== DRAG AND DROP PERSILANGAN BARU ====================
+        // FIX: Setup touch events untuk flashcard (swipe kiri/kanan = ganti kartu, tap = flip)
+        (function setupFlashcardTouch() {
+            const container = document.getElementById('flashcard');
+            let fcStartX = 0;
+            let fcStartY = 0;
+            let fcMoved = false;
+
+            container.addEventListener('touchstart', (e) => {
+                fcStartX = e.touches[0].clientX;
+                fcStartY = e.touches[0].clientY;
+                fcMoved = false;
+            }, { passive: true });
+
+            container.addEventListener('touchmove', (e) => {
+                const dx = Math.abs(e.touches[0].clientX - fcStartX);
+                const dy = Math.abs(e.touches[0].clientY - fcStartY);
+                if (dx > 10 || dy > 10) fcMoved = true;
+            }, { passive: true });
+
+            container.addEventListener('touchend', (e) => {
+                const dx = e.changedTouches[0].clientX - fcStartX;
+                const dy = e.changedTouches[0].clientY - fcStartY;
+
+                if (!fcMoved || (Math.abs(dx) < 20 && Math.abs(dy) < 20)) {
+                    // Ini adalah tap - flip kartu
+                    flipCard();
+                } else if (Math.abs(dx) > Math.abs(dy)) {
+                    // Swipe horizontal - ganti kartu
+                    if (dx < -50) nextCard();
+                    else if (dx > 50) prevCard();
+                }
+            }, { passive: true });
+        })();
+
+        // ==================== DRAG AND DROP PERSILANGAN ====================
+        // Mouse drag events
+        document.querySelectorAll('.gene-tile').forEach(tile => {
+            tile.addEventListener('dragstart', dragStart);
+            tile.addEventListener('dragend', dragEnd);
+        });
+
+        document.querySelectorAll('.gene-slot').forEach(slot => {
+            slot.addEventListener('dragover', allowDrop);
+            slot.addEventListener('dragleave', dragLeave);
+            slot.addEventListener('drop', dropHandler);
+        });
+
         function dragStart(e) {
             e.dataTransfer.setData('text/plain', e.target.dataset.gene);
             e.target.classList.add('dragging');
@@ -1749,23 +1777,83 @@
             e.currentTarget.classList.remove('drag-over');
         }
 
-        function drop(e, parent, index) {
+        function dropHandler(e) {
             e.preventDefault();
             e.currentTarget.classList.remove('drag-over');
-            
             const gene = e.dataTransfer.getData('text/plain');
-            const slot = e.currentTarget;
-            
-            // Set gene
+            const parent = e.currentTarget.dataset.parent;
+            const index = parseInt(e.currentTarget.dataset.index);
+            placeGene(gene, parent, index);
+        }
+
+        // FIX: Touch drag and drop untuk Android
+        (function setupTouchDragDrop() {
+            let dragGene = null;
+            let cloneEl = null;
+
+            function getSlotAtPoint(x, y) {
+                const slots = document.querySelectorAll('.gene-slot');
+                for (const slot of slots) {
+                    const rect = slot.getBoundingClientRect();
+                    if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) {
+                        return slot;
+                    }
+                }
+                return null;
+            }
+
+            document.querySelectorAll('.gene-tile').forEach(tile => {
+                tile.addEventListener('touchstart', (e) => {
+                    dragGene = tile.dataset.gene;
+                    tile.classList.add('dragging');
+
+                    // Create visual clone
+                    cloneEl = tile.cloneNode(true);
+                    cloneEl.classList.add('gene-tile-clone');
+                    cloneEl.style.width = tile.offsetWidth + 'px';
+                    cloneEl.style.height = tile.offsetHeight + 'px';
+                    cloneEl.style.left = (e.touches[0].clientX - tile.offsetWidth / 2) + 'px';
+                    cloneEl.style.top = (e.touches[0].clientY - tile.offsetHeight / 2) + 'px';
+                    document.body.appendChild(cloneEl);
+                }, { passive: true });
+
+                tile.addEventListener('touchmove', (e) => {
+                    e.preventDefault();
+                    if (!cloneEl) return;
+                    cloneEl.style.left = (e.touches[0].clientX - cloneEl.offsetWidth / 2) + 'px';
+                    cloneEl.style.top = (e.touches[0].clientY - cloneEl.offsetHeight / 2) + 'px';
+
+                    // Highlight target slot
+                    document.querySelectorAll('.gene-slot').forEach(s => s.classList.remove('drag-over'));
+                    const targetSlot = getSlotAtPoint(e.touches[0].clientX, e.touches[0].clientY);
+                    if (targetSlot) targetSlot.classList.add('drag-over');
+                }, { passive: false });
+
+                tile.addEventListener('touchend', (e) => {
+                    if (cloneEl) { cloneEl.remove(); cloneEl = null; }
+                    tile.classList.remove('dragging');
+                    document.querySelectorAll('.gene-slot').forEach(s => s.classList.remove('drag-over'));
+
+                    if (!dragGene) return;
+                    const targetSlot = getSlotAtPoint(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
+                    if (targetSlot) {
+                        const parent = targetSlot.dataset.parent;
+                        const index = parseInt(targetSlot.dataset.index);
+                        placeGene(dragGene, parent, index);
+                    }
+                    dragGene = null;
+                }, { passive: true });
+            });
+        })();
+
+        function placeGene(gene, parent, index) {
             parentGenes[parent][index] = gene;
-            
-            // Update slot visual
+            const slot = document.getElementById(`slot-${parent}-${index + 1}`);
             slot.innerHTML = `
                 <span style="font-size: 1.5rem; font-weight: 800; color: ${gene === 'R' ? '#991b1b' : '#475569'};">${gene}</span>
                 <button class="remove-btn" onclick="removeGene('${parent}', ${index})">×</button>
             `;
             slot.classList.add('filled');
-            
             updateParentLabels();
             checkCrossButton();
         }
@@ -1778,37 +1866,29 @@
                 <button class="remove-btn" onclick="removeGene('${parent}', ${index})">×</button>
             `;
             slot.classList.remove('filled');
-            
             updateParentLabels();
             checkCrossButton();
-            
-            // Hide results if showing
             document.getElementById('crossingResults').style.display = 'none';
         }
 
         function updateParentLabels() {
             const p1Genes = parentGenes.p1.filter(g => g !== null);
             const p2Genes = parentGenes.p2.filter(g => g !== null);
-            
             document.getElementById('p1-genes').textContent = p1Genes.length === 2 ? p1Genes.join('') : '--';
             document.getElementById('p2-genes').textContent = p2Genes.length === 2 ? p2Genes.join('') : '--';
-            
-            // Update 3D preview
+
             if (p1Genes.length === 2) {
-                const color1 = p1Genes.includes('R') ? 'red' : 'white';
-                initThreeJS('canvasParent1', color1);
+                initThreeJS('canvasParent1', p1Genes.includes('R') ? 'red' : 'white');
                 document.getElementById('canvasLabel1').textContent = getFlowerLabel(p1Genes.join('')) + ' (' + p1Genes.join('') + ')';
             }
             if (p2Genes.length === 2) {
-                const color2 = p2Genes.includes('R') ? 'red' : 'white';
-                initThreeJS('canvasParent2', color2);
+                initThreeJS('canvasParent2', p2Genes.includes('R') ? 'red' : 'white');
                 document.getElementById('canvasLabel2').textContent = getFlowerLabel(p2Genes.join('')) + ' (' + p2Genes.join('') + ')';
             }
         }
 
         function getFlowerLabel(genes) {
-            if (genes.includes('R')) return '🌺 Merah';
-            return '🌼 Putih';
+            return genes.includes('R') ? '🌺 Merah' : '🌼 Putih';
         }
 
         function sortGenes(genes) {
@@ -1816,84 +1896,59 @@
         }
 
         function checkCrossButton() {
-            const p1Complete = parentGenes.p1.every(g => g !== null);
-            const p2Complete = parentGenes.p2.every(g => g !== null);
+            const ready = parentGenes.p1.every(g => g !== null) && parentGenes.p2.every(g => g !== null);
             const btn = document.getElementById('crossBtn');
-            
-            if (p1Complete && p2Complete) {
-                btn.disabled = false;
-                btn.classList.add('pulse');
-            } else {
-                btn.disabled = true;
-                btn.classList.remove('pulse');
-            }
+            btn.disabled = !ready;
+            if (ready) btn.classList.add('pulse');
+            else btn.classList.remove('pulse');
         }
 
         function performCrossing() {
             const p1 = parentGenes.p1;
             const p2 = parentGenes.p2;
-            
-            // Show animation
             const anim = document.getElementById('crossingAnimation');
             anim.classList.add('active');
             document.getElementById('crossingResults').style.display = 'none';
-            
-            // Disable button
-            const btn = document.getElementById('crossBtn');
-            btn.disabled = true;
-            
+            document.getElementById('crossBtn').disabled = true;
+
             setTimeout(() => {
                 anim.classList.remove('active');
-                
-                // Calculate results
                 const results = [
                     sortGenes(p1[0] + p2[0]),
                     sortGenes(p1[0] + p2[1]),
                     sortGenes(p1[1] + p2[0]),
                     sortGenes(p1[1] + p2[1])
                 ];
-                
-                // Update Punnett labels
+
                 document.getElementById('top-label-1').textContent = p2[0];
                 document.getElementById('top-label-2').textContent = p2[1];
                 document.getElementById('left-label-1').textContent = p1[0];
                 document.getElementById('left-label-2').textContent = p1[1];
-                
-                // Update cells
+
                 results.forEach((genes, i) => {
                     const cell = document.getElementById(`cell-${i}`);
                     cell.textContent = genes;
                     cell.className = 'punnett-cell filled ' + (genes.includes('R') ? 'red' : 'white');
                 });
-                
-                // Render offspring cards
-                const grid = document.getElementById('offspringGrid');
-                grid.innerHTML = results.map((genes, i) => {
+
+                document.getElementById('offspringGrid').innerHTML = results.map((genes) => {
                     const isDominant = genes.includes('R');
-                    const label = getFlowerLabel(genes);
                     return `<div class="offspring-card ${isDominant ? 'dominant' : 'recessive'}">
-                        <div style="font-size:2.5rem; margin-bottom:0.3rem;">${isDominant ? '🌺' : '🌼'}</div>
+                        <div style="font-size:2.5rem;margin-bottom:0.3rem;">${isDominant ? '🌺' : '🌼'}</div>
                         <div class="offspring-genes">${genes}</div>
-                        <div class="offspring-pheno">${label}</div>
+                        <div class="offspring-pheno">${getFlowerLabel(genes)}</div>
                         <div class="offspring-percent">25%</div>
                     </div>`;
                 }).join('');
-                
-                // Update stats
+
                 const redCount = results.filter(r => r.includes('R')).length;
                 const whiteCount = results.filter(r => !r.includes('R')).length;
-                
                 document.getElementById('statRed').textContent = (redCount * 25) + '%';
                 document.getElementById('statWhite').textContent = (whiteCount * 25) + '%';
                 document.getElementById('statRatio').textContent = redCount + ':' + whiteCount;
-                
-                // Show results
+
                 document.getElementById('crossingResults').style.display = 'block';
-                
-                // Re-enable button
-                btn.disabled = false;
-                
-                // Scroll to results
+                document.getElementById('crossBtn').disabled = false;
                 document.getElementById('crossingResults').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             }, 2000);
         }
@@ -1906,29 +1961,52 @@
             modal.classList.add('active');
             document.body.style.overflow = 'hidden';
 
-            switch(type) {
-                case 'sel':
-                    title.textContent = '🦠 Simulasi Struktur Sel';
-                    content.innerHTML = `<div class="cell-animation"><div class="cell-membrane"><div class="nucleus"></div><div class="organelle"></div><div class="organelle"></div><div class="organelle"></div></div></div>
-                    <div class="highlight-box"><strong>Struktur Sel:</strong><br>• <strong>Membran Sel:</strong> Lapisan luar yang melindungi sel<br>• <strong>Nukleus:</strong> Pusat kontrol sel (berwarna hijau)<br>• <strong>Organel:</strong> Berbagai organel yang bergerak mengelilingi nukleus</div>
-                    <p>Animasi di atas menunjukkan struktur dasar sel dengan nukleus di tengah dan organel-organel yang beredar di sitoplasma.</p>`;
-                    break;
-                case 'fotosintesis':
-                    title.textContent = '🌿 Simulasi Fotosintesis';
-                    content.innerHTML = `<div style="text-align:center;padding:2rem;background:linear-gradient(to bottom,#87CEEB 0%,#90EE90 100%);border-radius:15px;margin:1rem 0;"><div style="font-size:4rem;animation:pulse-cell 2s infinite;">☀️</div><div style="margin:1rem 0;font-size:1.2rem;"><span style="color:var(--primary-dark);font-weight:bold;">CO₂</span> + <span style="color:var(--dark);font-weight:bold;">H₂O</span> + <span style="color:#ff6b35;font-weight:bold;">Cahaya</span></div><div style="font-size:2rem;">⬇️</div><div style="margin:1rem 0;font-size:1.2rem;"><span style="color:var(--primary-dark);font-weight:bold;">C₆H₁₂O₆</span> (Glukosa) + <span style="color:var(--secondary);font-weight:bold;">O₂</span></div><div style="font-size:4rem;margin-top:1rem;">🌱</div></div>
-                    <div class="highlight-box"><strong>Proses Fotosintesis:</strong><br>1. Tumbuhan menyerap CO₂ melalui stomata<br>2. Akar menyerap air (H₂O) dari tanah<br>3. Klorofil menangkap energi cahaya matahari<br>4. Glukosa dan oksigen dihasilkan di kloroplas</div>`;
-                    break;
-                case 'dna':
-                    title.textContent = '🧬 Simulasi Replikasi DNA';
-                    content.innerHTML = `<div style="background:var(--dark);padding:2rem;border-radius:15px;color:white;text-align:center;margin:1rem 0;"><div style="display:flex;justify-content:center;gap:5px;margin-bottom:1rem;"><div style="background:#ff6b6b;padding:10px;border-radius:5px;animation:slideIn 1s infinite alternate;">A</div><div style="background:#4ecdc4;padding:10px;border-radius:5px;animation:slideIn 1s infinite alternate 0.2s;">T</div><div style="background:#ffe66d;padding:10px;border-radius:5px;animation:slideIn 1s infinite alternate 0.4s;">G</div><div style="background:#95e1d3;padding:10px;border-radius:5px;animation:slideIn 1s infinite alternate 0.6s;">C</div></div><div style="font-size:1.2rem;margin:1rem 0;">DNA Parental → DNA Daughter</div><div style="display:flex;justify-content:center;gap:10px;"><div style="border:2px dashed white;padding:10px;border-radius:5px;">Heliks Terbuka</div><div style="border:2px solid white;padding:10px;border-radius:5px;">Replikasi</div></div></div>
-                    <div class="highlight-box"><strong>Tahapan Replikasi DNA:</strong><br>1. <strong>Inisiasi:</strong> DNA helicase membuka heliks ganda<br>2. <strong>Elongasi:</strong> DNA polimerase menambahkan basa komplementer<br>3. <strong>Terminasi:</strong> Dua molekul DNA identik terbentuk</div>`;
-                    break;
-                case 'mitosis':
-                    title.textContent = '✂️ Simulasi Mitosis';
-                    content.innerHTML = `<div style="display:flex;justify-content:space-around;align-items:center;padding:2rem;background:#f0f0f0;border-radius:15px;margin:1rem 0;flex-wrap:wrap;gap:1rem;"><div style="text-align:center;"><div style="width:60px;height:60px;background:var(--primary);border-radius:50%;margin:0 auto;"></div><p style="margin-top:0.5rem;font-weight:bold;">Profas</p></div><div style="font-size:2rem;">→</div><div style="text-align:center;"><div style="width:60px;height:60px;background:var(--secondary);border-radius:50%;display:flex;align-items:center;justify-content:center;"><div style="width:30px;height:30px;background:var(--dark);border-radius:50%;"></div></div><p style="margin-top:0.5rem;font-weight:bold;">Metafas</p></div><div style="font-size:2rem;">→</div><div style="text-align:center;"><div style="width:80px;height:40px;background:var(--accent);border-radius:20px;display:flex;align-items:center;justify-content:center;gap:10px;"><div style="width:25px;height:25px;background:var(--dark);border-radius:50%;"></div><div style="width:25px;height:25px;background:var(--dark);border-radius:50%;"></div></div><p style="margin-top:0.5rem;font-weight:bold;">Anafas</p></div><div style="font-size:2rem;">→</div><div style="text-align:center;"><div style="display:flex;gap:15px;"><div style="width:40px;height:40px;background:var(--primary);border-radius:50%;"></div><div style="width:40px;height:40px;background:var(--primary);border-radius:50%;"></div></div><p style="margin-top:0.5rem;font-weight:bold;">Telofas</p></div></div>
-                    <div class="highlight-box"><strong>Tahapan Mitosis:</strong><br>• <strong>Profas:</strong> Kromatin menggulung menjadi kromosom<br>• <strong>Metafas:</strong> Kromosom berbaris di tengah sel<br>• <strong>Anafas:</strong> Kromatid berpisah ke kutub berlawanan<br>• <strong>Telofas:</strong> Membran nukleus terbentuk kembali</div>`;
-                    break;
-            }
+            const simulasiMap = {
+                sel: {
+                    title: '🦠 Simulasi Struktur Sel',
+                    html: `<div class="cell-animation"><div class="cell-membrane"><div class="nucleus"></div><div class="organelle"></div><div class="organelle"></div><div class="organelle"></div></div></div>
+                    <div class="highlight-box"><strong>Struktur Sel:</strong><br>• <strong>Membran Sel:</strong> Lapisan luar yang melindungi sel<br>• <strong>Nukleus:</strong> Pusat kontrol sel (berwarna hijau)<br>• <strong>Organel:</strong> Berbagai organel yang bergerak mengelilingi nukleus</div>`
+                },
+                fotosintesis: {
+                    title: '🌿 Simulasi Fotosintesis',
+                    html: `<div style="text-align:center;padding:2rem;background:linear-gradient(to bottom,#87CEEB 0%,#90EE90 100%);border-radius:15px;margin:1rem 0;">
+                        <div style="font-size:4rem;animation:pulse-cell 2s infinite;">☀️</div>
+                        <div style="margin:1rem 0;font-size:1.2rem;"><span style="color:var(--primary-dark);font-weight:bold;">CO₂</span> + <span style="font-weight:bold;">H₂O</span> + <span style="color:#ff6b35;font-weight:bold;">Cahaya</span></div>
+                        <div style="font-size:2rem;">⬇️</div>
+                        <div style="margin:1rem 0;font-size:1.2rem;"><span style="color:var(--primary-dark);font-weight:bold;">C₆H₁₂O₆</span> + <span style="color:var(--secondary);font-weight:bold;">O₂</span></div>
+                        <div style="font-size:4rem;margin-top:1rem;">🌱</div></div>
+                    <div class="highlight-box"><strong>Proses Fotosintesis:</strong><br>1. Tumbuhan menyerap CO₂ melalui stomata<br>2. Akar menyerap air dari tanah<br>3. Klorofil menangkap energi cahaya matahari<br>4. Glukosa dan oksigen dihasilkan</div>`
+                },
+                dna: {
+                    title: '🧬 Simulasi Replikasi DNA',
+                    html: `<div style="background:var(--dark);padding:2rem;border-radius:15px;color:white;text-align:center;margin:1rem 0;">
+                        <div style="display:flex;justify-content:center;gap:5px;margin-bottom:1rem;">
+                            <div style="background:#ff6b6b;padding:10px;border-radius:5px;animation:slideIn 1s infinite alternate;">A</div>
+                            <div style="background:#4ecdc4;padding:10px;border-radius:5px;animation:slideIn 1s infinite alternate 0.2s;">T</div>
+                            <div style="background:#ffe66d;padding:10px;border-radius:5px;animation:slideIn 1s infinite alternate 0.4s;">G</div>
+                            <div style="background:#95e1d3;padding:10px;border-radius:5px;animation:slideIn 1s infinite alternate 0.6s;">C</div>
+                        </div>
+                        <div style="font-size:1.2rem;margin:1rem 0;">DNA Parental → DNA Daughter</div></div>
+                    <div class="highlight-box"><strong>Tahapan Replikasi DNA:</strong><br>1. <strong>Inisiasi:</strong> DNA helicase membuka heliks ganda<br>2. <strong>Elongasi:</strong> DNA polimerase menambahkan basa komplementer<br>3. <strong>Terminasi:</strong> Dua molekul DNA identik terbentuk</div>`
+                },
+                mitosis: {
+                    title: '✂️ Simulasi Mitosis',
+                    html: `<div style="display:flex;justify-content:space-around;align-items:center;padding:1.5rem;background:#f0f0f0;border-radius:15px;margin:1rem 0;flex-wrap:wrap;gap:1rem;">
+                        <div style="text-align:center;"><div style="width:60px;height:60px;background:var(--primary);border-radius:50%;margin:0 auto;"></div><p style="margin-top:0.5rem;font-weight:bold;font-size:0.85rem;">Profas</p></div>
+                        <div style="font-size:1.5rem;">→</div>
+                        <div style="text-align:center;"><div style="width:60px;height:60px;background:var(--secondary);border-radius:50%;margin:0 auto;display:flex;align-items:center;justify-content:center;"><div style="width:30px;height:30px;background:var(--dark);border-radius:50%;"></div></div><p style="margin-top:0.5rem;font-weight:bold;font-size:0.85rem;">Metafas</p></div>
+                        <div style="font-size:1.5rem;">→</div>
+                        <div style="text-align:center;"><div style="width:80px;height:40px;background:var(--accent);border-radius:20px;margin:0 auto;display:flex;align-items:center;justify-content:center;gap:10px;"><div style="width:22px;height:22px;background:var(--dark);border-radius:50%;"></div><div style="width:22px;height:22px;background:var(--dark);border-radius:50%;"></div></div><p style="margin-top:0.5rem;font-weight:bold;font-size:0.85rem;">Anafas</p></div>
+                        <div style="font-size:1.5rem;">→</div>
+                        <div style="text-align:center;"><div style="display:flex;gap:10px;"><div style="width:40px;height:40px;background:var(--primary);border-radius:50%;"></div><div style="width:40px;height:40px;background:var(--primary);border-radius:50%;"></div></div><p style="margin-top:0.5rem;font-weight:bold;font-size:0.85rem;">Telofas</p></div>
+                    </div>
+                    <div class="highlight-box"><strong>Tahapan Mitosis:</strong><br>• <strong>Profas:</strong> Kromatin menggulung menjadi kromosom<br>• <strong>Metafas:</strong> Kromosom berbaris di tengah sel<br>• <strong>Anafas:</strong> Kromatid berpisah ke kutub berlawanan<br>• <strong>Telofas:</strong> Membran nukleus terbentuk kembali</div>`
+                }
+            };
+
+            const sim = simulasiMap[type];
+            title.textContent = sim.title;
+            content.innerHTML = sim.html;
         }
 
         function closeSimulasi(e) {
@@ -1940,6 +2018,12 @@
 
         // ==================== KEYBOARD NAVIGATION ====================
         document.addEventListener('keydown', (e) => {
+            if (document.getElementById('flashcard-section') && document.getElementById('flashcard').closest('#flashcard').classList.contains('active')) {
+                if (e.key === 'ArrowRight') nextCard();
+                if (e.key === 'ArrowLeft') prevCard();
+                if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); flipCard(); }
+            }
+            // Flashcard keyboard - cek section aktif
             const flashcardSection = document.getElementById('flashcard');
             if (flashcardSection && flashcardSection.classList.contains('active')) {
                 if (e.key === 'ArrowRight') nextCard();
@@ -1952,40 +2036,18 @@
             }
         });
 
-        // ==================== TOUCH SWIPE ====================
-        let touchStartX = 0;
-        let touchEndX = 0;
-
-        document.addEventListener('touchstart', (e) => {
-            touchStartX = e.changedTouches[0].screenX;
-        }, {passive: true});
-
-        document.addEventListener('touchend', (e) => {
-            touchEndX = e.changedTouches[0].screenX;
-            handleSwipe();
-        }, {passive: true});
-
-        function handleSwipe() {
-            const flashcardSection = document.getElementById('flashcard');
-            if (flashcardSection && flashcardSection.classList.contains('active')) {
-                if (touchEndX < touchStartX - 50) nextCard();
-                if (touchEndX > touchStartX + 50) prevCard();
-            }
-        }
-
         // ==================== INIT ====================
         document.addEventListener('DOMContentLoaded', () => {
             renderMateri();
             renderQuestion();
             startTimer();
             renderCard();
-            
-            // Init default 3D flowers
+
             setTimeout(() => {
                 initThreeJS('canvasParent1', 'red');
                 initThreeJS('canvasParent2', 'red');
             }, 500);
-            
+
             const streak = Math.floor(Math.random() * 5) + 1;
             document.getElementById('streak').textContent = '🔥' + streak;
         });
